@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OCEANLUXE VILLAS - Frontend
 
-## Getting Started
+This is the official frontend for **OCEANLUXE VILLAS**, a modern villa booking platform. It's built with Next.js and TypeScript, offering a fast, responsive, and fully-featured user experience.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* **User Authentication:** Secure login/signup modal with email/password and Google OAuth.
+* **Dynamic Browsing:** Search, filter, and browse villa listings with a clean, dark-mode UI.
+* **Property Details:** View detailed villa information, amenities, pricing, and availability.
+* **Persistent Cart:** A Redux-powered shopping cart that persists user selections.
+* **Secure Checkout:** Integrated with Razorpay for a seamless and secure payment process.
+* **User Dashboard:**
+    * **My Bookings:** View past and upcoming trips.
+    * **My Listings:** A dedicated section for 'host' users to view their listed properties.
+* **Role-Based UI:** The interface adapts based on whether the user is a 'user' or a 'host' (e.g., "Become a Host" vs. "Host Dashboard").
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+* **Framework:** Next.js (App Router)
+* **Language:** TypeScript
+* **State Management:** Redux Toolkit
+* **Styling:** Tailwind CSS
+* **Data Fetching:** Axios
+* **Animations:** Framer Motion
+* **UI Components:**
+    * `lucide-react` (Icons)
+    * `react-hot-toast` (Notifications)
+    * `date-fns` (Date formatting)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Getting Started
 
-## Deploy on Vercel
+### 1. Prerequisites
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* Node.js (v18 or later)
+* `npm` or `yarn`
+* A running instance of the [backend API](https://github.com/your-username/backend_villabooking)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2. Installation
+
+1.  Clone the repository:
+    ```sh
+    git clone [https://github.com/your-username/client-villabooking.git](https://github.com/your-username/client-villabooking.git)
+    cd client-villabooking
+    ```
+
+2.  Install dependencies:
+    ```sh
+    npm install
+    # or
+    yarn install
+    ```
+
+### 3. Environment Variables
+
+Create a `.env.local` file in the root of the project and add the following environment variables:
+
+```env
+# Google OAuth Client ID
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
+
+# Razorpay Key ID (for payment modal)
+NEXT_PUBLIC_RAZORPAY_KEY_ID=YOUR_RAZORPAY_KEY_ID
+
+# The URL of your backend API
+NEXT_PUBLIC_API_URL=http://localhost:5000
