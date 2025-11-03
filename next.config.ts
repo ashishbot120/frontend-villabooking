@@ -1,6 +1,13 @@
 /** @type {import('next').NextConfig} */
+const isDevelopment = process.env.NODE_ENV === 'development';
+const backendApiDestination = isDevelopment
+  ? 'http://127.0.0.1:5000/api/:path*'
+  : 'https://backend-villabooking.vercel.app/api/:path*';
+
 const nextConfig = {
   // Your existing headers function
+
+  
   async headers() {
     return [
       {
@@ -20,7 +27,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*', // Matches all API routes
-        destination: 'http://127.0.0.1:5000/api/:path*', // Proxies them to your backend
+        destination: backendApiDestination , // Proxies them to your backend
       },
     ];
   },
