@@ -22,12 +22,12 @@ import { isAxiosError } from 'axios';
 
 const LightTrail = ({ delay }: { delay: number }) => (
     <motion.div
-        className="absolute top-0 left-0 w-1.5 h-1.5 bg-orange-400 rounded-full blur-[2px]"
+        className="absolute top-0 left-0 w-1.5 h-1.5 bg-orange-300 rounded-full blur-[2px]"
         style={{ opacity: 0 }}
         animate={{
             x: [0, Math.random() * 600 - 300, 0],
             y: [0, Math.random() * 900 - 450, 0],
-            opacity: [0, 0.4, 0],
+            opacity: [0, 0.6, 0],
             scale: [1, 2, 1],
         }}
         transition={{
@@ -187,7 +187,6 @@ const HostVillaPageContent = () => {
             await api.post('/villas', submissionData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-            // Optional: Show a nice success modal here instead of alert
             alert('Villa listed successfully!');
             router.push('/');
         } catch (err: unknown) {
@@ -205,7 +204,7 @@ const HostVillaPageContent = () => {
     };
     
     const amenitiesList = [
-        { name: 'wifi', label: 'Wi-Fi', icon: <MdPool size={20} /> }, // Using generic icons as placeholders if specifics aren't imported
+        { name: 'wifi', label: 'Wi-Fi', icon: <MdPool size={20} /> },
         { name: 'pool', label: 'Pool', icon: <MdPool size={20} /> },
         { name: 'kitchen', label: 'Kitchen', icon: <MdPool size={20} /> },
         { name: 'ac', label: 'AC', icon: <MdPool size={20} /> },
@@ -222,34 +221,31 @@ const HostVillaPageContent = () => {
     return (
         <>
             <Navbar />
-            <div className="relative min-h-screen w-full flex items-center justify-center p-4 lg:p-8 overflow-hidden bg-[#0a111f]">
-                {/* Background Atmosphere */}
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-[#0d1a2e] to-black" />
-                    <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-orange-500/10 rounded-full blur-[120px]" />
-                    <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px]" />
-                </div>
+            <div 
+                className="min-h-screen w-full flex items-center justify-center p-4 lg:p-8 bg-cover bg-center bg-fixed overflow-x-hidden"
+                style={{ backgroundImage: "url('https://images.pexels.com/photos/221457/pexels-photo-221457.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')" }}
+            >
+                {/* Dark Overlay to make text readable */}
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-0"></div>
 
                 <motion.div 
-                    className="relative z-10 w-full max-w-6xl bg-[#131d33]/80 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/10 text-slate-200 overflow-hidden"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
+                    className="relative z-10 w-full max-w-6xl bg-blue-900/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 text-white overflow-hidden"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
                 >
-                    {/* Decorative Top Border */}
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
-                    
+                    {/* Animated Light Trails */}
                     {[...Array(6)].map((_, i) => <LightTrail key={i} delay={i * 2} />)}
 
-                    <form onSubmit={handleSubmit} className="p-6 md:p-12">
+                    <form onSubmit={handleSubmit} className="p-6 md:p-12 relative z-20">
                         <div className="text-center mb-10">
                             <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-200 via-orange-400 to-amber-500 mb-3">
                                 List Your Property
                             </h1>
-                            <p className="text-slate-400">Share your villa with the world and start hosting.</p>
+                            <p className="text-white/70 text-lg">Share your villa with the world and start hosting.</p>
                         </div>
                         
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                             
                             {/* LEFT COLUMN: DETAILS */}
                             <div className="space-y-8">
@@ -257,7 +253,7 @@ const HostVillaPageContent = () => {
                                 
                                 <div className="space-y-5">
                                     <InputWithIcon 
-                                        icon={<MdVilla size={20} />} 
+                                        icon={<MdVilla size={22} />} 
                                         name="villaName" 
                                         placeholder="Villa Name (e.g. Sunset Paradise)" 
                                         value={formData.villaName} 
@@ -266,7 +262,7 @@ const HostVillaPageContent = () => {
                                     />
                                     
                                     <InputWithIcon 
-                                        icon={<MdLocationOn size={20} />} 
+                                        icon={<MdLocationOn size={22} />} 
                                         name="location" 
                                         placeholder="Location (e.g. Bali, Indonesia)" 
                                         value={formData.location} 
@@ -274,9 +270,9 @@ const HostVillaPageContent = () => {
                                         required
                                     />
                                     
-                                    <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-1 relative group focus-within:border-orange-500/50 focus-within:bg-slate-800 transition-all">
+                                    <div className="relative group">
                                         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-orange-400">
-                                            <MdOutlineAttachMoney size={22} />
+                                            <MdOutlineAttachMoney size={24} />
                                         </div>
                                         <input 
                                             type="number"
@@ -286,7 +282,7 @@ const HostVillaPageContent = () => {
                                             placeholder="Price per night"
                                             required
                                             min="1"
-                                            className="w-full p-4 pl-12 bg-transparent outline-none text-lg placeholder:text-slate-500 font-medium" 
+                                            className="w-full p-4 pl-12 bg-black/20 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 text-white text-lg font-medium" 
                                         />
                                     </div>
                                 </div>
@@ -294,21 +290,21 @@ const HostVillaPageContent = () => {
                                 <div className="grid grid-cols-2 gap-4">
                                     <CounterInput 
                                         label="Bedrooms" 
-                                        icon={<MdKingBed className="text-blue-400" />} 
+                                        icon={<MdKingBed className="text-blue-300" />} 
                                         name="bedrooms" 
                                         value={formData.bedrooms} 
                                         onChange={handleChange}
                                     />
                                     <CounterInput 
                                         label="Bathrooms" 
-                                        icon={<MdBathroom className="text-blue-400" />} 
+                                        icon={<MdBathroom className="text-blue-300" />} 
                                         name="bathrooms" 
                                         value={formData.bathrooms} 
                                         onChange={handleChange}
                                     />
                                     <CounterInput 
                                         label="Area (sqft)" 
-                                        icon={<BsTextareaResize className="text-emerald-400" />} 
+                                        icon={<BsTextareaResize className="text-emerald-300" />} 
                                         name="area" 
                                         value={formData.area} 
                                         onChange={handleChange}
@@ -316,7 +312,7 @@ const HostVillaPageContent = () => {
                                     />
                                     <CounterInput 
                                         label="Guests" 
-                                        icon={<MdPeople className="text-orange-400" />} 
+                                        icon={<MdPeople className="text-orange-300" />} 
                                         name="maxGuests" 
                                         value={formData.maxGuests} 
                                         onChange={handleChange}
@@ -324,8 +320,8 @@ const HostVillaPageContent = () => {
                                     />
                                 </div>
 
-                                <div className="pt-2">
-                                    <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">Amenities</h3>
+                                <div className="pt-4">
+                                    <h3 className="text-sm font-bold text-orange-200 uppercase tracking-wider mb-4">Amenities</h3>
                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                         {amenitiesList.map(item => (
                                             <motion.button 
@@ -334,21 +330,21 @@ const HostVillaPageContent = () => {
                                                 onClick={() => toggleAmenity(item.name)} 
                                                 className={`relative flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 overflow-hidden ${
                                                     amenities[item.name] 
-                                                        ? 'bg-orange-500/10 border-orange-500/50 text-orange-200 shadow-[0_0_15px_rgba(249,115,22,0.15)]' 
-                                                        : 'bg-slate-800/40 border-slate-700/50 text-slate-400 hover:bg-slate-800 hover:border-slate-600'
+                                                        ? 'bg-orange-500/20 border-orange-400 text-orange-100 shadow-[0_0_15px_rgba(249,115,22,0.3)]' 
+                                                        : 'bg-black/20 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/30'
                                                 }`}
-                                                whileHover={{ scale: 1.02 }}
+                                                whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
                                             >
                                                 {amenities[item.name] && (
-                                                    <div className="absolute top-1 right-1 text-orange-500">
-                                                        <FiCheck size={10} />
+                                                    <div className="absolute top-1 right-1 text-orange-400">
+                                                        <FiCheck size={12} />
                                                     </div>
                                                 )}
-                                                <div className={`mb-1 ${amenities[item.name] ? 'text-orange-400' : 'text-slate-500'}`}>
+                                                <div className={`mb-1 ${amenities[item.name] ? 'text-orange-300' : 'text-white/50'}`}>
                                                     {item.icon}
                                                 </div>
-                                                <span className="text-[10px] font-medium">{item.label}</span>
+                                                <span className="text-[10px] font-medium tracking-wide">{item.label}</span>
                                             </motion.button>
                                         ))}
                                     </div>
@@ -360,7 +356,7 @@ const HostVillaPageContent = () => {
                                 <SectionHeader title="Gallery & Description" />
                                 
                                 <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">Description</label>
+                                    <label className="text-sm font-bold text-orange-200 uppercase tracking-wider ml-1">Description</label>
                                     <textarea 
                                         name="description" 
                                         value={formData.description} 
@@ -368,24 +364,24 @@ const HostVillaPageContent = () => {
                                         placeholder="Tell guests what makes your place special..." 
                                         rows={6} 
                                         required
-                                        className="w-full p-4 bg-slate-800/50 border border-slate-700/50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all placeholder:text-slate-600 resize-none text-slate-200" 
+                                        className="w-full p-4 bg-black/20 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 resize-none text-white text-base" 
                                     />
                                 </div>
 
-                                <div className="space-y-3">
-                                    <div className="flex justify-between items-end">
-                                        <label className="text-sm font-medium text-slate-400 ml-1">Photos</label>
-                                        <span className="text-xs text-slate-500">{formData.photos.length}/10 uploaded</span>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-end border-b border-white/10 pb-2">
+                                        <label className="text-sm font-bold text-orange-200 uppercase tracking-wider">Photos</label>
+                                        <span className="text-xs text-white/60 font-mono bg-black/30 px-2 py-1 rounded">{formData.photos.length}/10</span>
                                     </div>
                                     
                                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                                         {/* Upload Button */}
                                         <label 
                                             htmlFor="photos" 
-                                            className="aspect-square flex flex-col items-center justify-center bg-slate-800/30 border-2 border-dashed border-slate-600 rounded-xl cursor-pointer hover:bg-slate-800 hover:border-orange-400 hover:text-orange-400 transition-all group"
+                                            className="aspect-square flex flex-col items-center justify-center bg-white/5 border-2 border-dashed border-white/30 rounded-xl cursor-pointer hover:bg-white/10 hover:border-orange-400 hover:text-orange-300 transition-all group"
                                         >
-                                            <FiUpload className="w-6 h-6 text-slate-500 group-hover:text-orange-400 mb-2 transition-colors" />
-                                            <span className="text-[10px] uppercase font-bold text-slate-500 group-hover:text-orange-400">Add</span>
+                                            <FiUpload className="w-6 h-6 text-white/50 group-hover:text-orange-400 mb-2 transition-colors" />
+                                            <span className="text-[10px] uppercase font-bold text-white/50 group-hover:text-orange-300">Add</span>
                                         </label>
                                         <input 
                                             type="file" 
@@ -400,11 +396,11 @@ const HostVillaPageContent = () => {
                                         <AnimatePresence>
                                             {formData.photos.map((file, index) => (
                                                 <motion.div 
-                                                    key={index} // Ideally use a unique ID, index is fallback
+                                                    key={index}
                                                     initial={{ opacity: 0, scale: 0.8 }}
                                                     animate={{ opacity: 1, scale: 1 }}
                                                     exit={{ opacity: 0, scale: 0.5 }}
-                                                    className="relative aspect-square group rounded-xl overflow-hidden shadow-lg border border-slate-700/50"
+                                                    className="relative aspect-square group rounded-xl overflow-hidden shadow-lg border border-white/20"
                                                 >
                                                     <Image 
                                                         src={URL.createObjectURL(file)} 
@@ -412,13 +408,13 @@ const HostVillaPageContent = () => {
                                                         fill
                                                         className="object-cover transition-transform duration-500 group-hover:scale-110" 
                                                     />
-                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[1px]">
                                                         <button 
                                                             type="button" 
                                                             onClick={() => removePhoto(index)} 
-                                                            className="bg-red-500/90 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors transform hover:scale-110"
+                                                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full transition-colors transform hover:scale-110 shadow-lg"
                                                         >
-                                                            <FiX size={14} />
+                                                            <FiX size={16} />
                                                         </button>
                                                     </div>
                                                 </motion.div>
@@ -433,43 +429,43 @@ const HostVillaPageContent = () => {
                         <AnimatePresence>
                             {error && (
                                 <motion.div 
-                                    className="mt-8 p-4 bg-red-900/20 border border-red-500/30 rounded-xl flex items-center gap-3 text-red-200 justify-center"
+                                    className="mt-8 p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-center gap-3 text-red-200 justify-center backdrop-blur-sm"
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0 }}
                                 >
-                                    <FiX className="shrink-0" />
+                                    <div className="p-1 bg-red-500 rounded-full"><FiX className="text-white w-3 h-3" /></div>
                                     <p className="text-sm font-medium">{error}</p>
                                 </motion.div>
                             )}
                         </AnimatePresence>
 
                         {/* SUBMIT BUTTON */}
-                        <div className="mt-10 flex justify-center">
+                        <div className="mt-12 flex justify-center">
                             <motion.button 
                                 type="submit" 
                                 disabled={submitting} 
-                                className="group relative flex items-center justify-center w-full max-w-sm py-4 px-8 bg-gradient-to-r from-orange-600 to-amber-600 text-white font-bold rounded-full shadow-lg shadow-orange-900/20 hover:shadow-orange-600/30 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all"
-                                whileHover={{ scale: submitting ? 1 : 1.02 }}
+                                className="group relative flex items-center justify-center w-full max-w-md py-4 px-8 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-bold text-lg rounded-full shadow-lg shadow-orange-900/40 hover:shadow-orange-600/50 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden transition-all border border-white/20"
+                                whileHover={{ scale: submitting ? 1 : 1.05 }}
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
                                 {submitting ? (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-3">
                                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                        <span>Publishing...</span>
+                                        <span>Publishing Listing...</span>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-3 relative z-10">
                                         <span>PUBLISH LISTING</span>
-                                        <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
+                                        <FiArrowRight className="group-hover:translate-x-1 transition-transform w-5 h-5" />
                                     </div>
                                 )}
                             </motion.button>
                         </div>
 
                         <div className="mt-6 text-center">
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-white/40">
                                 By proceeding, you agree to our Terms of Service & Host Guidelines.
                             </p>
                         </div>
@@ -493,33 +489,33 @@ const HostVillaPage = () => {
 // --- HELPER COMPONENTS ---
 
 const SectionHeader = ({ title }: { title: string }) => (
-    <div className="flex items-center gap-4 mb-2">
-        <h2 className="text-xl font-bold text-slate-100 tracking-wide uppercase">{title}</h2>
-        <div className="h-[1px] bg-slate-700 flex-grow" />
+    <div className="flex items-center gap-4 mb-4">
+        <h2 className="text-xl font-bold text-orange-300 tracking-wider uppercase drop-shadow-md">{title}</h2>
+        <div className="h-[1px] bg-gradient-to-r from-orange-500/50 to-transparent flex-grow" />
     </div>
 );
 
 const InputWithIcon = ({ icon, ...props }: { icon: React.ReactNode } & React.InputHTMLAttributes<HTMLInputElement>) => (
     <div className="relative group">
-        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-orange-400 transition-colors">
+        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/50 group-focus-within:text-orange-400 transition-colors">
             {icon}
         </div>
         <input 
             {...props} 
-            className="w-full p-4 pl-12 bg-slate-800/50 border border-slate-700/50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500/50 transition-all placeholder:text-slate-600 text-slate-200" 
+            className="w-full p-4 pl-12 bg-black/20 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 text-white" 
         />
     </div>
 );
 
 const CounterInput = ({ label, icon, ...props }: { label: string; icon: React.ReactNode } & React.InputHTMLAttributes<HTMLInputElement>) => (
-    <div className="p-3 bg-slate-800/40 border border-slate-700/50 rounded-xl hover:border-slate-600 transition-colors group">
-        <label className="text-[10px] uppercase font-bold text-slate-500 flex items-center gap-1.5 mb-1 group-hover:text-slate-400 transition-colors">
+    <div className="p-3 bg-black/20 border border-white/20 rounded-xl hover:border-white/40 transition-colors group">
+        <label className="text-[10px] uppercase font-bold text-white/60 flex items-center gap-1.5 mb-1 group-hover:text-white/80 transition-colors">
             {icon} {label}
         </label>
         <input 
             type="number" 
             {...props} 
-            className="w-full bg-transparent text-2xl font-bold text-slate-200 outline-none placeholder:text-slate-700" 
+            className="w-full bg-transparent text-2xl font-bold text-white outline-none placeholder:text-white/20" 
         />
     </div>
 );

@@ -1,17 +1,16 @@
-// app/my-listings/page.tsx
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import api from '@/utils/axiosInstance'; // <-- FIX 1: Use axios instance
+import api from '@/utils/axiosInstance';
 import { Toaster, toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 // Import your components and types
 import Navbar from '@/app/components/navbar';
-import VillaCard from '@/app/components/VillaCard'; // Adjust path to your VillaCard
-import { Villa } from '@/types'; // Adjust path to your types
-import { useAppSelector } from '@/app/store/Hooks'; // Adjust path to your store hooks
+import VillaCard from '@/app/components/VillaCard';
+import { Villa } from '@/types';
+import { useAppSelector } from '@/app/store/Hooks';
 
 const MyListingsPage = () => {
   const router = useRouter();
@@ -34,7 +33,7 @@ const MyListingsPage = () => {
         });
         setVillas(response.data);
       } catch (error) {
-        console.error('Failed to fetch your properties:', error); // <-- FIX 1
+        console.error('Failed to fetch your properties:', error);
         toast.error('Failed to fetch your properties.');
       } finally {
         setLoading(false);
@@ -90,9 +89,9 @@ const MyListingsPage = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <p className="text-xl mb-4">You haven&apos;t listed any properties yet.</p> {/* <-- FIX 2 */}
+            <p className="text-xl mb-4">You haven&apos;t listed any properties yet.</p>
             <button
-              onClick={() => router.push('/create-listing')} // Adjust if your create page has a different route
+              onClick={() => router.push('/host/villa')} // ✅ Updated redirect path
               className="bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity"
             >
               List Your First Property
