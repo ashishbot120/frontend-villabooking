@@ -229,7 +229,8 @@ const HostVillaPageContent = () => {
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-0"></div>
 
                 <motion.div 
-                    className="relative z-10 w-full max-w-6xl bg-blue-900/40 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 text-white overflow-hidden"
+                    /* CHANGED: Switched from bg-blue-900/40 to bg-slate-900/95 for consistent dark background */
+                    className="relative z-10 w-full max-w-6xl bg-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/10 text-white overflow-hidden"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
@@ -282,7 +283,7 @@ const HostVillaPageContent = () => {
                                             placeholder="Price per night"
                                             required
                                             min="1"
-                                            className="w-full p-4 pl-12 bg-black/20 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 text-white text-lg font-medium" 
+                                            className="w-full p-4 pl-12 bg-black/40 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 text-white text-lg font-medium" 
                                         />
                                     </div>
                                 </div>
@@ -331,7 +332,7 @@ const HostVillaPageContent = () => {
                                                 className={`relative flex flex-col items-center justify-center p-3 rounded-xl border transition-all duration-200 overflow-hidden ${
                                                     amenities[item.name] 
                                                         ? 'bg-orange-500/20 border-orange-400 text-orange-100 shadow-[0_0_15px_rgba(249,115,22,0.3)]' 
-                                                        : 'bg-black/20 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/30'
+                                                        : 'bg-black/40 border-white/10 text-white/60 hover:bg-white/10 hover:border-white/30'
                                                 }`}
                                                 whileHover={{ scale: 1.05 }}
                                                 whileTap={{ scale: 0.95 }}
@@ -364,7 +365,7 @@ const HostVillaPageContent = () => {
                                         placeholder="Tell guests what makes your place special..." 
                                         rows={6} 
                                         required
-                                        className="w-full p-4 bg-black/20 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 resize-none text-white text-base" 
+                                        className="w-full p-4 bg-black/40 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 resize-none text-white text-base" 
                                     />
                                 </div>
 
@@ -502,13 +503,15 @@ const InputWithIcon = ({ icon, ...props }: { icon: React.ReactNode } & React.Inp
         </div>
         <input 
             {...props} 
-            className="w-full p-4 pl-12 bg-black/20 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 text-white" 
+            // CHANGED: Increased input background darkness slightly for contrast
+            className="w-full p-4 pl-12 bg-black/40 border border-white/20 rounded-xl outline-none focus:ring-2 focus:ring-orange-400/80 focus:border-orange-400 transition-all placeholder:text-white/40 text-white" 
         />
     </div>
 );
 
 const CounterInput = ({ label, icon, ...props }: { label: string; icon: React.ReactNode } & React.InputHTMLAttributes<HTMLInputElement>) => (
-    <div className="p-3 bg-black/20 border border-white/20 rounded-xl hover:border-white/40 transition-colors group">
+    // CHANGED: Increased input background darkness slightly for contrast
+    <div className="p-3 bg-black/40 border border-white/20 rounded-xl hover:border-white/40 transition-colors group">
         <label className="text-[10px] uppercase font-bold text-white/60 flex items-center gap-1.5 mb-1 group-hover:text-white/80 transition-colors">
             {icon} {label}
         </label>

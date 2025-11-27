@@ -25,7 +25,7 @@ const HomePage = () => {
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    setShowDatePicker(false); // Close after selection
+    setShowDatePicker(false);
   };
 
   return (
@@ -33,7 +33,9 @@ const HomePage = () => {
       <Navbar />
 
       {/* --- HERO SECTION --- */}
-      <div className="relative w-full h-[600px] flex items-center justify-center">
+      {/* overflow-visible ensures the popup isn't clipped */}
+      <div className="relative w-full h-[700px] flex items-center justify-center overflow-visible z-20">
+        
         {/* Background Image */}
         <div 
           className="absolute inset-0 z-0"
@@ -43,94 +45,102 @@ const HomePage = () => {
             backgroundPosition: 'center',
           }}
         >
-          {/* Dark Overlay Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a111f]/80 via-[#0a111f]/40 to-[#0a111f]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0a111f]/70 via-[#0a111f]/30 to-[#0a111f]" />
         </div>
 
         {/* Content Wrapper */}
-        <div className="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center text-center">
+        <div className="relative z-30 w-full max-w-6xl px-4 flex flex-col items-center text-center">
           
-          {/* Hero Title */}
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-5xl md:text-7xl font-extrabold text-white mb-8 tracking-tight drop-shadow-2xl"
+            className="text-5xl md:text-8xl font-extrabold text-white mb-12 tracking-tight drop-shadow-2xl"
           >
-            FIND YOUR PERFECT <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-200">
-              ESCAPE
+            Find Your <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-amber-200">
+              Perfect Escape
             </span>
           </motion.h1>
 
-          {/* --- SEARCH BAR (THE FIX IS HERE) --- */}
+          {/* --- NEW PILL SEARCH BAR --- */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="w-full max-w-4xl bg-white/10 backdrop-blur-md border border-white/20 p-2 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-2 relative" // relative is key here if you wanted it to contain, but we want popups to escape
+            // Changed to rounded-full for the "Pill" look
+            className="w-full max-w-4xl bg-white/10 backdrop-blur-xl border border-white/20 p-2 rounded-full shadow-2xl flex flex-col md:flex-row items-center gap-0 relative"
           >
             
             {/* 1. Location Input */}
-            <div className="flex-1 bg-[#0d1a2e]/80 rounded-xl px-4 py-3 flex items-center gap-3 border border-transparent focus-within:border-orange-500/50 transition-colors">
-              <FiMapPin className="text-orange-400 w-5 h-5 shrink-0" />
-              <div className="w-full">
-                <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Where to?</label>
-                <input 
-                  type="text" 
-                  placeholder="Bali, Maldives..." 
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full bg-transparent outline-none text-white placeholder:text-slate-500 text-sm font-medium"
-                />
+            <div className="flex-1 w-full md:w-auto relative group">
+              <div className="flex items-center px-6 py-4 rounded-full transition-colors hover:bg-white/10 cursor-pointer">
+                <div className="mr-4 text-orange-400">
+                  <FiMapPin size={24} />
+                </div>
+                <div className="flex-grow text-left">
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-0.5">Where</label>
+                  <input 
+                    type="text" 
+                    placeholder="Search destinations" 
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full bg-transparent outline-none text-white placeholder:text-slate-400 text-base font-medium truncate"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* 2. Date Picker (FIXED) */}
-            <div className="relative flex-1">
+            {/* Divider */}
+            <div className="hidden md:block w-[1px] h-10 bg-white/20 mx-2" />
+
+            {/* 2. Date Picker */}
+            <div className="relative flex-1 w-full md:w-auto">
               <button 
                 onClick={() => setShowDatePicker(!showDatePicker)}
-                className={`w-full h-full bg-[#0d1a2e]/80 rounded-xl px-4 py-3 flex items-center gap-3 border transition-colors text-left ${showDatePicker ? 'border-orange-500' : 'border-transparent'}`}
+                className={`w-full flex items-center px-6 py-4 rounded-full transition-all text-left group hover:bg-white/10 ${showDatePicker ? 'bg-white/10' : ''}`}
               >
-                <FiCalendar className="text-orange-400 w-5 h-5 shrink-0" />
-                <div>
-                  <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Dates</label>
-                  <span className={`text-sm font-medium ${selectedDate ? 'text-white' : 'text-slate-500'}`}>
+                <div className="mr-4 text-orange-400">
+                  <FiCalendar size={24} />
+                </div>
+                <div className="flex-grow">
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-0.5">When</label>
+                  <span className={`block text-base font-medium truncate ${selectedDate ? 'text-white' : 'text-slate-400'}`}>
                     {selectedDate ? format(selectedDate, 'MMM dd, yyyy') : 'Add dates'}
                   </span>
                 </div>
               </button>
 
-              {/* CALENDAR POPUP */}
+              {/* CALENDAR DROPDOWN */}
               <AnimatePresence>
                 {showDatePicker && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    // ✅ CSS FIX: Absolute positioning + High Z-Index + Top-Full (drops down)
-                    className="absolute top-full mt-2 left-0 w-80 bg-[#131d33] border border-white/10 rounded-2xl shadow-2xl p-4 z-50 overflow-hidden"
+                    exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                    // Centered below the bar, ensuring high Z-Index
+                    className="absolute top-[120%] left-1/2 -translate-x-1/2 w-80 md:w-96 bg-[#1a2333] border border-white/10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-6 z-50 overflow-hidden"
                   >
-                    {/* Month Header */}
-                    <div className="flex justify-between items-center mb-4">
-                      <button onClick={prevMonth} className="p-1 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white">
+                    {/* Header */}
+                    <div className="flex justify-between items-center mb-6">
+                      <button onClick={prevMonth} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors">
                         <FiChevronLeft size={20} />
                       </button>
-                      <span className="font-bold text-white">
+                      <span className="font-bold text-white text-lg">
                         {format(currentDate, 'MMMM yyyy')}
                       </span>
-                      <button onClick={nextMonth} className="p-1 hover:bg-white/10 rounded-full transition-colors text-slate-400 hover:text-white">
+                      <button onClick={nextMonth} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors">
                         <FiChevronRight size={20} />
                       </button>
                     </div>
 
-                    {/* Days Grid */}
-                    <div className="grid grid-cols-7 gap-1 text-center mb-2">
+                    {/* Days */}
+                    <div className="grid grid-cols-7 gap-2 text-center mb-2">
                       {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-                        <div key={day} className="text-xs font-bold text-slate-500">{day}</div>
+                        <div key={day} className="text-xs font-bold text-slate-500 uppercase">{day}</div>
                       ))}
                     </div>
-                    <div className="grid grid-cols-7 gap-1">
+                    <div className="grid grid-cols-7 gap-2">
                       {daysInMonth.map((day) => {
                         const isSelected = selectedDate && isSameDay(day, selectedDate);
                         const isCurrentMonth = isSameMonth(day, currentDate);
@@ -140,13 +150,13 @@ const HomePage = () => {
                             onClick={() => handleDateSelect(day)}
                             disabled={!isCurrentMonth}
                             className={`
-                              h-9 w-9 rounded-lg flex items-center justify-center text-sm font-medium transition-all
+                              h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium transition-all relative
                               ${!isCurrentMonth ? 'invisible' : ''}
                               ${isSelected 
-                                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' 
+                                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30 scale-110' 
                                 : 'text-slate-300 hover:bg-white/10 hover:text-white'
                               }
-                              ${isToday(day) && !isSelected ? 'border border-orange-500/50 text-orange-400' : ''}
+                              ${isToday(day) && !isSelected ? 'border border-orange-500 text-orange-400' : ''}
                             `}
                           >
                             {format(day, 'd')}
@@ -159,42 +169,54 @@ const HomePage = () => {
               </AnimatePresence>
             </div>
 
+            {/* Divider */}
+            <div className="hidden md:block w-[1px] h-10 bg-white/20 mx-2" />
+
             {/* 3. Guests Input */}
-            <div className="flex-1 bg-[#0d1a2e]/80 rounded-xl px-4 py-3 flex items-center gap-3 border border-transparent focus-within:border-orange-500/50 transition-colors">
-              <FiUser className="text-orange-400 w-5 h-5 shrink-0" />
-              <div className="w-full">
-                <label className="block text-[10px] uppercase font-bold text-slate-400 tracking-wider">Guests</label>
-                <input 
-                  type="number" 
-                  min="1"
-                  value={guests}
-                  onChange={(e) => setGuests(parseInt(e.target.value))}
-                  className="w-full bg-transparent outline-none text-white placeholder:text-slate-500 text-sm font-medium"
-                />
+            <div className="flex-1 w-full md:w-auto">
+              <div className="flex items-center px-6 py-4 rounded-full transition-colors hover:bg-white/10 cursor-pointer">
+                <div className="mr-4 text-orange-400">
+                  <FiUser size={24} />
+                </div>
+                <div className="flex-grow text-left">
+                  <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-0.5">Who</label>
+                  <input 
+                    type="number" 
+                    min="1"
+                    value={guests}
+                    onChange={(e) => setGuests(parseInt(e.target.value))}
+                    className="w-full bg-transparent outline-none text-white placeholder:text-slate-400 text-base font-medium"
+                    placeholder="Add guests"
+                  />
+                </div>
               </div>
             </div>
 
             {/* 4. Search Button */}
-            <button className="bg-orange-500 hover:bg-orange-600 text-white rounded-xl px-6 py-3 transition-all shadow-lg shadow-orange-500/25 flex items-center justify-center shrink-0">
-              <FiSearch size={24} />
-            </button>
+            <div className="p-2">
+              <button className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white rounded-full p-4 md:px-8 md:py-4 transition-all shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 transform hover:scale-105 active:scale-95">
+                <FiSearch size={24} />
+                <span className="hidden md:inline font-bold">Search</span>
+              </button>
+            </div>
 
           </motion.div>
         </div>
       </div>
 
       {/* --- LISTINGS SECTION --- */}
-      <div className="container mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold mb-8 text-white">Featured Villas</h2>
+      <div className="container mx-auto px-4 py-16 relative z-10">
+        <h2 className="text-3xl font-bold mb-8 text-white">Featured Destinations</h2>
         
         {/* Empty State / Loading */}
-        <div className="flex flex-col items-center justify-center py-20 bg-[#0d1a2e] rounded-3xl border border-white/5">
-          <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-            <FiSearch className="text-white/20 w-8 h-8" />
+        <div className="flex flex-col items-center justify-center py-24 bg-[#0f172a]/50 backdrop-blur-sm rounded-3xl border border-white/5">
+          <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 animate-pulse">
+            <FiSearch className="text-white/20 w-10 h-10" />
           </div>
-          <p className="text-slate-400 text-lg">No villas available at the moment.</p>
-          <button className="mt-6 text-orange-400 font-medium hover:text-orange-300 transition-colors">
-            Load More
+          <p className="text-slate-400 text-xl font-medium">No villas available at the moment.</p>
+          <p className="text-slate-500 text-sm mt-2">Try changing your search filters</p>
+          <button className="mt-8 px-8 py-3 bg-white/5 hover:bg-white/10 rounded-full text-orange-400 font-semibold transition-colors border border-white/10">
+            Clear Filters
           </button>
         </div>
       </div>
