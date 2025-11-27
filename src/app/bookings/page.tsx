@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/navbar';
-import axios from 'axios';
+import api from '@/utils/axiosInstance';
 import { Villa } from '@/types'; // Assuming you have this types file
 import Link from 'next/link';
 import Image from 'next/image'; // <-- 1. IMPORTED
@@ -24,7 +24,7 @@ const MyBookingsPage = () => {
         const fetchBookings = async () => {
             try {
                 // Use relative path to work with your Next.js proxy
-                const { data } = await axios.get('/api/bookings/mybookings', { 
+                const { data } = await api.get('/bookings/mybookings', { 
                     withCredentials: true 
                 });
                 setBookings(data);

@@ -182,7 +182,7 @@ const HostVillaPageContent = () => {
         });
         
         try {
-            const response = await fetch('http://localhost:5000/api/villas', {
+            const response = await fetch('/villas', {
                 method: 'POST',
                 credentials: 'include',
                 body: submissionData,

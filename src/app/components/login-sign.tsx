@@ -64,17 +64,22 @@ const LoginModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     };
 
     const handleGoogleRedirect = () => {
-        const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-        // Ensure this matches exactly what's in your Google Cloud Console
-        const redirectUri = 'http://localhost:3000/auth/google/callback';
-        const scope = 'openid email profile';
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    
+    // ✅ DYNAMIC REDIRECT URI
+    // This automatically detects if you are on localhost or Vercel
+    const origin = typeof window !== 'undefined' && window.location.origin 
+        ? window.location.origin 
+        : 'http://localhost:3000';
 
-        const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
+    const redirectUri = `${origin}/auth/google/callback`;
+    const scope = 'openid email profile';
 
-        console.log('🔐 Redirecting to Google OAuth...');
-        window.location.href = googleAuthUrl;
-    };
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
 
+    console.log('🔐 Redirecting to Google OAuth...', redirectUri);
+    window.location.href = googleAuthUrl;
+};
     // --- REDIRECT LOGIC ---
     useEffect(() => {
         // Only run redirect logic if the modal was open when auth state changed

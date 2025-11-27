@@ -52,7 +52,7 @@ const BrowsePage = () => {
     setHasSearched(true); 
 
     try {
-      const response = await fetch(`/api/villas/ai-search?query=${encodeURIComponent(query)}`);
+      const response = await fetch(`/villas/ai-search?query=${encodeURIComponent(query)}`);
       
       if (!response.ok) {
         throw new Error('Search failed');

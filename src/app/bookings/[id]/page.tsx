@@ -3,7 +3,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios'; // No need to import AxiosError, isAxiosError is on the default import
+import api from '@/utils/axiosInstance'; // Adjust path as needed
+import { isAxiosError } from 'axios';
 import { format } from 'date-fns';
 import { Calendar, IndianRupee, MapPin, Hash, User, BedDouble } from 'lucide-react';
 import Image from 'next/image'; // <-- IMPORTED
@@ -42,8 +43,8 @@ const BookingDetailPage = () => {
         const fetchBookingDetail = async () => {
             try {
                 setLoading(true);
-                const { data } = await axios.get(
-                    `/api/bookings/${id}`, 
+                const { data } = await api.get(
+                    `/bookings/${id}`, 
                     { withCredentials: true }
                 );
                 setBooking(data);
@@ -52,7 +53,7 @@ const BookingDetailPage = () => {
                 let errorMessage = 'Failed to load booking details.';
 
                 // FIX 1: Use type guard
-                if (axios.isAxiosError(err)) { 
+                if (isAxiosError(err)) { 
                     errorMessage = err.response?.data?.message || err.message;
                     
                     if (err.response?.status === 401 || err.response?.status === 403) {

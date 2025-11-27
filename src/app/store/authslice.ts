@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction, isAnyOf } from '@reduxjs/toolkit';
-import axios from 'axios'; // <-- FIX: Removed unused 'AxiosError' import
-
+import api from '@/utils/axiosInstance'; // <-- FIX: Use axios instance
+import { isAxiosError } from 'axios';
 // Configure axios defaults for all requests
-axios.defaults.withCredentials = true;
+api.defaults.withCredentials = true;
 
 // --- INTERFACES ---
 interface User {
@@ -53,7 +53,7 @@ export const loginUser = createAsyncThunk<AuthResponse, LoginData>( // <-- FIX 1
   async (userData, { rejectWithValue }) => {
     try {
       console.log('🔐 Attempting login...');
-      const res = await axios.post('http://localhost:5000/api/login', userData, { 
+      const res = await api.post('/login', userData, { 
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json'
@@ -65,7 +65,7 @@ export const loginUser = createAsyncThunk<AuthResponse, LoginData>( // <-- FIX 1
     } catch (error: unknown) { // <-- FIX 2
       console.error('❌ Login error:', error);
       // Use AxiosError type guard
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         return rejectWithValue(error.response?.data?.msg || 'Login failed');
       }
       return rejectWithValue('An unknown error occurred');
@@ -78,7 +78,7 @@ export const signupUser = createAsyncThunk<AuthResponse, SignupData>( // <-- FIX
   async (userData, { rejectWithValue }) => {
     try {
       console.log('📝 Attempting signup...');
-      const res = await axios.post('http://localhost:5000/api/signup', userData, { 
+      const res = await api.post('/signup', userData, { 
         withCredentials: true,
         headers: {
           'Content-Type': 'application/json'
@@ -89,7 +89,7 @@ export const signupUser = createAsyncThunk<AuthResponse, SignupData>( // <-- FIX
       return res.data;
     } catch (error: unknown) { // <-- FIX 4
       console.error('❌ Signup error:', error);
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         return rejectWithValue(error.response?.data?.msg || 'Signup failed');
       }
       return rejectWithValue('An unknown error occurred');
@@ -102,7 +102,7 @@ export const loginWithGoogle = createAsyncThunk<AuthResponse, string>(
   async (code, { rejectWithValue }) => {
     try {
       console.log('🔐 Attempting Google login...');
-      const response = await axios.post('http://localhost:5000/api/google', 
+      const response = await api.post('/google', 
         { token: code }, 
         { 
           withCredentials: true,
@@ -117,7 +117,7 @@ export const loginWithGoogle = createAsyncThunk<AuthResponse, string>(
       console.error('❌ Google login error:', error); 
       
       let message = 'Google sign-in failed';
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         message = error.response?.data?.message || error.message;
       } else if (error instanceof Error) {
         message = error.message;
@@ -135,8 +135,8 @@ export const updateUserRole = createAsyncThunk<User, 'user' | 'host'>(
       console.log('🔄 Updating user role to:', userType);
       console.log('🍪 Cookies before role update:', document.cookie);
       
-      const response = await axios.patch(
-        'http://localhost:5000/api/users/update-role',
+      const response = await api.patch(
+        '/users/update-role',
         { userType },
         { 
           withCredentials: true,
@@ -152,7 +152,7 @@ export const updateUserRole = createAsyncThunk<User, 'user' | 'host'>(
       console.error('❌ Role Update Error:', error);
       
       let message = 'Failed to update role';
-      if (axios.isAxiosError(error)) {
+      if (isAxiosError(error)) {
         message = error.response?.data?.message || error.message;
       } else if (error instanceof Error) {
         message = error.message;
@@ -173,7 +173,7 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.token = null;
-      axios.post('http://localhost:5000/api/logout', {}, { withCredentials: true })
+      api.post('/logout', {}, { withCredentials: true })
         .then(() => console.log('✅ Logout successful'))
         .catch(err => console.error('❌ Logout error:', err));
     },

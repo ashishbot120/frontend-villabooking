@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '../components/navbar';
 import Link from 'next/link';
 import Image from 'next/image'; // <-- IMPORTED
-import axios from 'axios';
+import api from '@/utils/axiosInstance'
 import Script from 'next/script';
 import { FiTrash2 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
@@ -78,7 +78,7 @@ const CartPage = () => {
 
         try {
             // 1. Create an order on the backend
-            const { data } = await axios.post('http://localhost:5000/api/payments/create-order', {}, { withCredentials: true });
+            const { data } = await api.post('/payments/create-order', {}, { withCredentials: true });
             
             const { order, bookingIds } = data;
 
@@ -92,7 +92,7 @@ const CartPage = () => {
                 order_id: order.id,
                 handler: async function (response: RazorpayResponse) {
                     // 3. Verify the payment on the backend
-                    await axios.post('http://localhost:5000/api/payments/verify', {
+                    await api.post('/payments/verify', {
                         ...response,
                         bookingIds,
                     }, { withCredentials: true });

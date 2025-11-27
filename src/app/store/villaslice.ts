@@ -1,9 +1,10 @@
 // app/store/villaslice.ts
 
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios'; // <-- FIX: Removed unused 'AxiosError'
+import api from '@/utils/axiosInstance'; // <-- FIX 1: Use axios instance
 import { Villa } from '@/types';
 import type { RootState } from './store'; // ← Import RootState
+import { isAxiosError } from 'axios'; // <-- FIX 3: Import type guard
 
 interface VillaState {
   villas: Villa[];
@@ -32,11 +33,11 @@ export const fetchVillas = createAsyncThunk(
       if (params.guests !== undefined) query.append('guests', params.guests.toString());
       if (params.date) query.append('date', params.date);
 
-      const response = await axios.get(`/api/villas?${query.toString()}`);
+      const response = await api.get(`/villas?${query.toString()}`);
       return response.data as Villa[];
     } catch (error: unknown) { // <-- 2. FIXED
       let message = 'Failed to fetch villas';
-      if (axios.isAxiosError(error)) { // <-- 3. ADDED TYPE GUARD
+      if (isAxiosError(error)) { // <-- 3. ADDED TYPE GUARD
           message = error.response?.data?.message || error.message;
       } else if (error instanceof Error) {
           message = error.message;

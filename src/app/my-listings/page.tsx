@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '@/utils/axiosInstance'; // <-- FIX 1: Use axios instance
 import { Toaster, toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -29,7 +29,7 @@ const MyListingsPage = () => {
 
       try {
         setLoading(true);
-        const response = await axios.get('/api/villas/my-listings', {
+        const response = await api.get('/villas/my-listings', {
           withCredentials: true,
         });
         setVillas(response.data);

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import axios from 'axios';
+import api from '@/utils/axiosInstance'; // <-- FIX 1: Use axios instance
 import { motion, AnimatePresence, cubicBezier } from 'framer-motion';
 import { addDays, parseISO } from 'date-fns';
 import { toast, Toaster } from 'react-hot-toast';
@@ -260,7 +260,7 @@ const AvailabilityModal = ({
       endDate: state[0].endDate!.toISOString(),
     };
     try {
-      const response = await axios.post(`/api/villas/${villaId}/unavailability`, newRange, {
+      const response = await api.post(`/villas/${villaId}/unavailability`, newRange, {
         withCredentials: true,
       });
       onSave(response.data);
@@ -357,7 +357,7 @@ const HostControls = ({
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to permanently delete this listing?')) {
       try {
-        await axios.delete(`/api/villas/${villa._id}`, { withCredentials: true });
+        await api.delete(`/villas/${villa._id}`, { withCredentials: true });
         toast.success('Villa deleted successfully.');
         router.push('/');
       } catch {
@@ -487,8 +487,8 @@ const BookingWidget = ({ villa }: { villa: ExtendedVilla }) => {
     }
 
     try {
-      await axios.put(
-        `/api/villas/${villa._id}`,
+      await api.put(
+        `/villas/${villa._id}`,
         { guests: newCapacity },
         {
           headers: { 'Content-Type': 'application/json' },
@@ -1122,7 +1122,7 @@ export default function VillaDetailPage() {
   useEffect(() => {
     const fetchVilla = async () => {
       try {
-        const response = await axios.get(`/api/villas/${id}`);
+        const response = await api.get(`/villas/${id}`);
         setVilla(response.data);
       } catch {
         toast.error('Failed to load villa details.');
@@ -1135,7 +1135,7 @@ export default function VillaDetailPage() {
 
   const handleSaveEdit = async (formData: FormData) => {
     try {
-      const response = await axios.put(`/api/villas/${id}`, formData, {
+      const response = await api.put(`/villas/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         withCredentials: true,
       });

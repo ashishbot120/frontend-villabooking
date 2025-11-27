@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
+import api from '@/utils/axiosInstance'; // <-- FIX 1: Use axios instance
 import { toast } from 'react-hot-toast';
 import { Villa } from '../../types';
 
@@ -35,25 +35,25 @@ const initialState: CartState = {
 
 // --- ASYNC THUNKS ---
 export const fetchCart = createAsyncThunk('cart/fetchCart', async () => {
-    const response = await axios.get('http://localhost:5000/api/cart', { withCredentials: true });
+    const response = await api.get('/cart', { withCredentials: true });
     return response.data;
 });
 
 // --- FIX 2: Use the AddToCartData interface instead of 'any' ---
 export const addToCart = createAsyncThunk('cart/addToCart', async (itemData: AddToCartData) => {
-    const response = await axios.post('http://localhost:5000/api/cart', itemData, { withCredentials: true });
+    const response = await api.post('/cart', itemData, { withCredentials: true });
     toast.success('Added to Cart!');
     return response.data;
 });
 
 export const removeFromCart = createAsyncThunk('cart/removeFromCart', async (itemId: string) => {
-    const response = await axios.delete(`http://localhost:5000/api/cart/${itemId}`, { withCredentials: true });
+    const response = await api.delete(`/cart/${itemId}`, { withCredentials: true });
     toast.success('Removed from Cart');
     return response.data;
 });
 
 export const checkout = createAsyncThunk('cart/checkout', async () => {
-    const response = await axios.post('http://localhost:5000/api/cart/checkout', {}, { withCredentials: true });
+    const response = await api.post('/cart/checkout', {}, { withCredentials: true });
     toast.success('Booking Successful!');
     return response.data;
 });
