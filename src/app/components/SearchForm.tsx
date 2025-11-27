@@ -1,224 +1,189 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiSearch, FiMapPin, FiCalendar, FiUser, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
-import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday } from 'date-fns';
+import React, { useState, FormEvent, useEffect, useRef } from 'react';
+import { MapPin, Calendar, Users, Search, Loader2 } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchVillas, selectVillaLoading } from '../store/villaslice';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { format } from 'date-fns';
+import { AppDispatch } from '../store/store';
 
-const HomePage = () => {
-  // --- Search State ---
+const SearchForm = () => {
   const [location, setLocation] = useState('');
-  const [guests, setGuests] = useState(1);
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [guests, setGuests] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [errors, setErrors] = useState<{ location?: string; guests?: string }>({});
 
-  // --- Calendar Logic ---
-  const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-  const prevMonth = () => setCurrentDate(subMonths(currentDate, 1));
-  
-  const daysInMonth = eachDayOfInterval({
-    start: startOfMonth(currentDate),
-    end: endOfMonth(currentDate),
-  });
+  const dispatch = useDispatch<AppDispatch>();
+  const loading = useSelector(selectVillaLoading);
+  const calendarRef = useRef<HTMLDivElement>(null);
+  const dateButtonRef = useRef<HTMLButtonElement>(null);
 
-  const handleDateSelect = (date: Date) => {
-    setSelectedDate(date);
-    setShowDatePicker(false);
+  // Close calendar on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        calendarRef.current && !calendarRef.current.contains(e.target as Node) &&
+        dateButtonRef.current && !dateButtonRef.current.contains(e.target as Node)
+      ) {
+        setShowCalendar(false);
+      }
+    };
+
+    if (showCalendar) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showCalendar]);
+
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (location || guests || selectedDate) {
+        dispatch(fetchVillas({
+          location: location || undefined,
+          guests: guests ? Number(guests) : undefined,
+          date: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined,
+        }));
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [location, guests, selectedDate, dispatch]);
+
+  const validate = () => {
+    const newErrors: typeof errors = {};
+    if (!location.trim()) newErrors.location = 'Location required';
+    if (!guests || Number(guests) < 1) newErrors.guests = 'Min 1 guest';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    dispatch(fetchVillas({
+      location: location || undefined,
+      guests: Number(guests),
+      date: selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined,
+    }));
   };
 
   return (
-    // Main Container: Full Screen, Flex Center
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center font-sans text-slate-200 selection:bg-orange-500/30">
-      
-      {/* --- BACKGROUND IMAGE (Single Layer) --- */}
-      <div className="absolute inset-0 z-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: "url('https://images.pexels.com/photos/1268855/pexels-photo-1268855.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')",
-          }}
-        />
-        {/* Dark Overlay for readability */}
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
-      </div>
-
-      {/* --- MAIN CONTENT --- */}
-      <div className="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center text-center">
+    <div className="bg-slate-800/60 backdrop-blur-md p-4 rounded-xl border border-slate-700/50">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
         
-        {/* Title */}
-        <motion.h1 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-5xl md:text-8xl font-extrabold text-white mb-12 tracking-tight drop-shadow-2xl"
-        >
-          Find Your <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-amber-200">
-            Perfect Escape
-          </span>
-        </motion.h1>
-
-        {/* --- SEARCH BAR --- */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="w-full max-w-4xl bg-white/10 backdrop-blur-xl border border-white/20 p-2 rounded-full shadow-2xl flex flex-col md:flex-row items-center gap-0 relative"
-        >
-          
-          {/* 1. Location Input */}
-          <div className="flex-1 w-full md:w-auto relative group">
-            <div className="flex items-center px-6 py-4 rounded-full transition-colors hover:bg-white/10 cursor-pointer">
-              <div className="mr-4 text-orange-400">
-                <FiMapPin size={24} />
-              </div>
-              <div className="flex-grow text-left">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-0.5">Where</label>
-                <input 
-                  type="text" 
-                  placeholder="Search destinations" 
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="w-full bg-transparent outline-none text-white placeholder:text-slate-400 text-base font-medium truncate"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="hidden md:block w-[1px] h-10 bg-white/20 mx-2" />
-
-          {/* 2. Date Picker Trigger */}
-          <div className="relative flex-1 w-full md:w-auto">
-            <button 
-              onClick={() => setShowDatePicker(!showDatePicker)}
-              className={`w-full flex items-center px-6 py-4 rounded-full transition-all text-left group hover:bg-white/10 ${showDatePicker ? 'bg-white/10' : ''}`}
-            >
-              <div className="mr-4 text-orange-400">
-                <FiCalendar size={24} />
-              </div>
-              <div className="flex-grow">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-0.5">When</label>
-                <span className={`block text-base font-medium truncate ${selectedDate ? 'text-white' : 'text-slate-400'}`}>
-                  {selectedDate ? format(selectedDate, 'MMM dd, yyyy') : 'Add dates'}
-                </span>
-              </div>
-            </button>
-
-            {/* CALENDAR POPUP */}
-            <AnimatePresence>
-              {showDatePicker && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                  className="absolute top-[120%] left-1/2 -translate-x-1/2 w-80 md:w-96 bg-[#1a2333] border border-white/10 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-6 z-50 overflow-hidden"
-                >
-                  {/* Calendar Header */}
-                  <div className="flex justify-between items-center mb-6">
-                    <button onClick={(e) => { e.stopPropagation(); prevMonth(); }} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors">
-                      <FiChevronLeft size={20} />
-                    </button>
-                    <span className="font-bold text-white text-lg">
-                      {format(currentDate, 'MMMM yyyy')}
-                    </span>
-                    <button onClick={(e) => { e.stopPropagation(); nextMonth(); }} className="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-white transition-colors">
-                      <FiChevronRight size={20} />
-                    </button>
-                  </div>
-
-                  {/* Days of Week */}
-                  <div className="grid grid-cols-7 gap-2 text-center mb-2">
-                    {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-                      <div key={day} className="text-xs font-bold text-slate-500 uppercase">{day}</div>
-                    ))}
-                  </div>
-
-                  {/* Calendar Grid */}
-                  <div className="grid grid-cols-7 gap-2">
-                    {daysInMonth.map((day) => {
-                      const isSelected = selectedDate && isSameDay(day, selectedDate);
-                      const isCurrentMonth = isSameMonth(day, currentDate);
-                      return (
-                        <button
-                          key={day.toString()}
-                          onClick={() => handleDateSelect(day)}
-                          disabled={!isCurrentMonth}
-                          className={`
-                            h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium transition-all relative
-                            ${!isCurrentMonth ? 'invisible' : ''}
-                            ${isSelected 
-                              ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30 scale-110' 
-                              : 'text-slate-300 hover:bg-white/10 hover:text-white'
-                            }
-                            ${isToday(day) && !isSelected ? 'border border-orange-500 text-orange-400' : ''}
-                          `}
-                        >
-                          {format(day, 'd')}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Divider */}
-          <div className="hidden md:block w-[1px] h-10 bg-white/20 mx-2" />
-
-          {/* 3. Guests Input */}
-          <div className="flex-1 w-full md:w-auto">
-            <div className="flex items-center px-6 py-4 rounded-full transition-colors hover:bg-white/10 cursor-pointer">
-              <div className="mr-4 text-orange-400">
-                <FiUser size={24} />
-              </div>
-              <div className="flex-grow text-left">
-                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-0.5">Who</label>
-                <input 
-                  type="number" 
-                  min="1"
-                  value={guests}
-                  onChange={(e) => setGuests(parseInt(e.target.value))}
-                  className="w-full bg-transparent outline-none text-white placeholder:text-slate-400 text-base font-medium"
-                  placeholder="Add guests"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* 4. Search Button */}
-          <div className="p-2">
-            <button className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 text-white rounded-full p-4 md:px-8 md:py-4 transition-all shadow-lg shadow-orange-500/25 flex items-center justify-center gap-2 transform hover:scale-105 active:scale-95">
-              <FiSearch size={24} />
-              <span className="hidden md:inline font-bold">Search</span>
-            </button>
-          </div>
-
-        </motion.div>
-      </div>
-
-      {/* --- FEATURED SECTION (Below Fold) --- */}
-      {/* Added margin-top to push it below the full screen hero area if needed, 
-          or kept here if you want it to be scrollable content */}
-      <div className="absolute top-[100vh] w-full bg-[#0a111f]">
-        <div className="container mx-auto px-4 py-16">
-          <h2 className="text-3xl font-bold mb-8 text-white">Featured Destinations</h2>
-          <div className="flex flex-col items-center justify-center py-24 bg-[#0f172a]/50 backdrop-blur-sm rounded-3xl border border-white/5">
-            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 animate-pulse">
-              <FiSearch className="text-white/20 w-10 h-10" />
-            </div>
-            <p className="text-slate-400 text-xl font-medium">No villas available at the moment.</p>
-            <button className="mt-8 px-8 py-3 bg-white/5 hover:bg-white/10 rounded-full text-orange-400 font-semibold transition-colors border border-white/10">
-              Clear Filters
-            </button>
-          </div>
+        {/* Location */}
+        <div className="relative col-span-1 md:col-span-2">
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+          <input
+            type="text"
+            placeholder="Where to?"
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+              setErrors(prev => ({ ...prev, location: undefined }));
+            }}
+            className={`w-full bg-slate-700/50 border rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
+              errors.location ? 'border-red-500' : 'border-slate-600'
+            }`}
+            aria-label="Search location"
+          />
+          {errors.location && <p className="absolute -bottom-5 left-0 text-xs text-red-400">{errors.location}</p>}
         </div>
-      </div>
 
+        {/* Dates */}
+        <div className="relative z-50">
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10 pointer-events-none" size={20} />
+          <button
+            ref={dateButtonRef}
+            type="button"
+            onClick={() => setShowCalendar(!showCalendar)}
+            className="w-full bg-slate-700/50 border border-slate-600 rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 text-left transition-all"
+          >
+            {selectedDate ? format(selectedDate, 'PPP') : 'Dates'}
+          </button>
+
+          {showCalendar && (
+            <div
+              ref={calendarRef}
+              className="absolute top-full left-0 mt-2 z-[9999] w-full md:w-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-slate-900 border border-slate-700 rounded-lg p-3 shadow-2xl">
+                <DayPicker
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    setSelectedDate(date || undefined);
+                    setShowCalendar(false);
+                  }}
+                  disabled={{ before: new Date() }}
+                  classNames={{
+                    caption: 'flex justify-center items-center py-2 relative',
+                    caption_label: 'text-white text-lg font-medium',
+                    head_cell: 'text-slate-400 text-sm font-normal uppercase tracking-wider w-10',
+                    head_row: 'flex',
+                    table: 'w-full border-collapse',
+                    head: 'mb-2',
+                    tbody: '',
+                    row: 'flex w-full mt-1',
+                    cell: 'text-center p-0 relative',
+                    day: 'text-white hover:bg-slate-700 rounded-md w-10 h-10 flex items-center justify-center transition-colors cursor-pointer',
+                    day_today: 'font-bold text-orange-500',
+                    day_disabled: 'text-slate-600 opacity-50 cursor-not-allowed hover:bg-transparent',
+                    day_selected: '!bg-orange-500 !text-white font-bold',
+                    day_outside: 'text-slate-500 opacity-50',
+                    nav: 'flex justify-between absolute w-full top-2 px-2',
+                    nav_button: 'text-orange-500 hover:bg-slate-800 p-1.5 rounded-md transition-colors',
+                    nav_button_previous: 'left-2',
+                    nav_button_next: 'right-2',
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Guests + Search */}
+        <div className="flex items-start gap-2">
+          <div className="relative flex-grow">
+            <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+            <input
+              type="number"
+              placeholder="Guests"
+              min="1"
+              value={guests}
+              onChange={(e) => {
+                const val = e.target.value;
+                setGuests(val);
+                if (val && Number(val) >= 1) {
+                  setErrors(prev => ({ ...prev, guests: undefined }));
+                }
+              }}
+              className={`w-full bg-slate-700/50 border rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
+                errors.guests ? 'border-red-500' : 'border-slate-600'
+              }`}
+              aria-label="Number of guests"
+            />
+            {errors.guests && <p className="absolute -bottom-5 left-0 text-xs text-red-400">{errors.guests}</p>}
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-gradient-to-r from-orange-500 to-amber-500 text-white p-3.5 rounded-lg hover:opacity-90 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+            aria-label="Search"
+          >
+            {loading ? <Loader2 size={20} className="animate-spin" /> : <Search size={20} />}
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
 
-export default HomePage;
+export default SearchForm;
