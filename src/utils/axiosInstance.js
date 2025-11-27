@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // FIX: Change 'import.meta.env.MODE' to 'process.env.NODE_ENV'
-  baseURL: process.env.NODE_ENV === "development" 
-    ? "http://localhost:5000/api" 
-    : "https://backend-villabooking.vercel.app/api",
+  // ✅ JUST USE "/api". 
+  // Next.js will automatically route this to the correct backend 
+  // based on your next.config.js rewrites.
+  baseURL: "/api", 
   withCredentials: true,
 });
 
