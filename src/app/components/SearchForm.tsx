@@ -73,173 +73,196 @@ const SearchForm = () => {
   };
 
   return (
-    <div className="relative">
-      <div className="bg-slate-800/40 backdrop-blur-sm p-6 rounded-2xl border border-slate-700/30">
-        <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-3">
-          
-          {/* Location */}
-          <div className="relative flex-1 min-w-[200px]">
-            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={20} />
-            <input
-              type="text"
-              placeholder="Where to?"
-              value={location}
-              onChange={(e) => {
-                setLocation(e.target.value);
-                setErrors(prev => ({ ...prev, location: undefined }));
-              }}
-              className={`w-full bg-slate-900/50 border rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${
-                errors.location ? 'border-red-500' : 'border-slate-600/50'
-              }`}
-              aria-label="Search location"
-            />
-            {errors.location && <p className="absolute -bottom-5 left-0 text-xs text-red-400">{errors.location}</p>}
-          </div>
+    <div className="bg-slate-800/60 backdrop-blur-md p-4 rounded-xl border border-slate-700/50">
+      <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start">
+        
+        {/* Location */}
+        <div className="relative col-span-1 md:col-span-2">
+          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+          <input
+            type="text"
+            placeholder="Where to?"
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+              setErrors(prev => ({ ...prev, location: undefined }));
+            }}
+            className={`w-full bg-slate-700/50 border rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
+              errors.location ? 'border-red-500' : 'border-slate-600'
+            }`}
+            aria-label="Search location"
+          />
+          {errors.location && <p className="absolute -bottom-5 left-0 text-xs text-red-400">{errors.location}</p>}
+        </div>
 
-          {/* Dates with Fixed Calendar */}
-          <div className="relative flex-1 min-w-[200px]">
-            <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 z-10 pointer-events-none" size={20} />
-            <button
-              ref={dateButtonRef}
-              type="button"
-              onClick={() => setShowCalendar(!showCalendar)}
-              className="w-full bg-slate-900/50 border border-slate-600/50 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 text-left transition-all hover:border-slate-500"
-            >
-              {selectedDate ? format(selectedDate, 'MMM dd, yyyy') : 'Dates'}
-            </button>
+        {/* Dates */}
+        <div className="relative">
+          <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 z-10 pointer-events-none" size={20} />
+          <button
+            ref={dateButtonRef}
+            type="button"
+            onClick={() => setShowCalendar(!showCalendar)}
+            className="w-full bg-slate-700/50 border border-slate-600 rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 text-left transition-all"
+          >
+            {selectedDate ? format(selectedDate, 'PPP') : 'Dates'}
+          </button>
 
-            {/* Calendar Dropdown - Fixed positioning */}
-            {showCalendar && (
-              <>
-                {/* Backdrop overlay */}
-                <div 
-                  className="fixed inset-0 z-[100]" 
-                  onClick={() => setShowCalendar(false)}
-                />
-                
-                {/* Calendar container */}
-                <div
-                  ref={calendarRef}
-                  className="fixed z-[101] mt-2"
-                  style={{
-                    top: dateButtonRef.current ? `${dateButtonRef.current.getBoundingClientRect().bottom + window.scrollY + 8}px` : '0',
-                    left: dateButtonRef.current ? `${dateButtonRef.current.getBoundingClientRect().left}px` : '0',
+          {showCalendar && (
+            <div className="fixed inset-0 z-[9999] flex items-start justify-center pt-20 px-4">
+              {/* Backdrop */}
+              <div 
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm" 
+                onClick={() => setShowCalendar(false)}
+              />
+              
+              {/* Calendar */}
+              <div
+                ref={calendarRef}
+                className="relative bg-slate-900 border border-slate-700 rounded-2xl p-6 shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <style jsx global>{`
+                  .rdp {
+                    --rdp-cell-size: 45px;
+                    --rdp-accent-color: #f97316;
+                    --rdp-background-color: rgba(249, 115, 22, 0.1);
+                    margin: 0;
+                  }
+                  .rdp-months {
+                    justify-content: center;
+                  }
+                  .rdp-month {
+                    width: 100%;
+                  }
+                  .rdp-caption {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 0.5rem 0 1rem 0;
+                    position: relative;
+                    margin-bottom: 0.5rem;
+                  }
+                  .rdp-caption_label {
+                    color: white;
+                    font-size: 1.125rem;
+                    font-weight: 600;
+                    z-index: 1;
+                  }
+                  .rdp-nav {
+                    position: absolute;
+                    top: 0;
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    justify-content: space-between;
+                    padding: 0 0.5rem;
+                  }
+                  .rdp-nav_button {
+                    color: #f97316;
+                    padding: 0.5rem;
+                    border-radius: 0.5rem;
+                    transition: all 0.2s;
+                    background: transparent;
+                    border: none;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                  }
+                  .rdp-nav_button:hover {
+                    background-color: rgba(100, 116, 139, 0.3);
+                  }
+                  .rdp-nav_button svg {
+                    width: 20px;
+                    height: 20px;
+                  }
+                  .rdp-table {
+                    width: 100%;
+                    max-width: 100%;
+                    border-collapse: collapse;
+                  }
+                  .rdp-head {
+                    margin-bottom: 0.5rem;
+                  }
+                  .rdp-head_cell {
+                    color: #94a3b8;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    padding: 0.5rem;
+                    text-align: center;
+                  }
+                  .rdp-tbody {
+                    border: none;
+                  }
+                  .rdp-row {
+                    border: none;
+                  }
+                  .rdp-cell {
+                    padding: 2px;
+                    text-align: center;
+                  }
+                  .rdp-day {
+                    color: white;
+                    border-radius: 0.5rem;
+                    font-weight: 500;
+                    transition: all 0.2s;
+                    width: 100%;
+                    height: 100%;
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  }
+                  .rdp-day:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
+                    background-color: rgba(100, 116, 139, 0.3);
+                  }
+                  .rdp-day_today:not(.rdp-day_selected) {
+                    font-weight: 700;
+                    color: #fb923c;
+                    background-color: rgba(251, 146, 60, 0.1);
+                  }
+                  .rdp-day_selected,
+                  .rdp-day_selected:hover {
+                    background-color: #f97316 !important;
+                    color: white !important;
+                    font-weight: 700;
+                  }
+                  .rdp-day_disabled {
+                    color: #475569;
+                    opacity: 0.5;
+                    cursor: not-allowed;
+                  }
+                  .rdp-day_disabled:hover {
+                    background-color: transparent;
+                  }
+                  .rdp-day_outside {
+                    color: #64748b;
+                    opacity: 0.4;
+                  }
+                `}</style>
+                <DayPicker
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => {
+                    setSelectedDate(date || undefined);
+                    setShowCalendar(false);
                   }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="bg-slate-900 border border-slate-700 rounded-2xl p-5 shadow-2xl min-w-[320px]">
-                    <style jsx global>{`
-                      .custom-calendar .rdp {
-                        --rdp-cell-size: 42px;
-                        margin: 0;
-                      }
-                      .custom-calendar .rdp-caption {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        padding: 0.5rem 0 1rem 0;
-                        position: relative;
-                      }
-                      .custom-calendar .rdp-caption_label {
-                        color: white;
-                        font-size: 1.125rem;
-                        font-weight: 600;
-                      }
-                      .custom-calendar .rdp-head_cell {
-                        color: #94a3b8;
-                        font-size: 0.875rem;
-                        font-weight: 600;
-                        text-transform: uppercase;
-                        padding: 0.5rem 0;
-                      }
-                      .custom-calendar .rdp-cell {
-                        padding: 2px;
-                      }
-                      .custom-calendar .rdp-day {
-                        color: white;
-                        border-radius: 0.5rem;
-                        font-weight: 500;
-                        transition: all 0.2s;
-                      }
-                      .custom-calendar .rdp-day:hover:not(.rdp-day_disabled):not(.rdp-day_selected) {
-                        background-color: rgba(100, 116, 139, 0.3);
-                      }
-                      .custom-calendar .rdp-day_today {
-                        font-weight: 700;
-                        color: #fb923c;
-                      }
-                      .custom-calendar .rdp-day_selected {
-                        background-color: #f97316 !important;
-                        color: white !important;
-                        font-weight: 700;
-                      }
-                      .custom-calendar .rdp-day_disabled {
-                        color: #475569;
-                        opacity: 0.5;
-                        cursor: not-allowed;
-                      }
-                      .custom-calendar .rdp-day_outside {
-                        color: #64748b;
-                        opacity: 0.4;
-                      }
-                      .custom-calendar .rdp-nav {
-                        position: absolute;
-                        top: 0.5rem;
-                        display: flex;
-                        gap: 0.5rem;
-                      }
-                      .custom-calendar .rdp-nav_button {
-                        color: #f97316;
-                        padding: 0.5rem;
-                        border-radius: 0.5rem;
-                        transition: all 0.2s;
-                        background: transparent;
-                        border: none;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                      }
-                      .custom-calendar .rdp-nav_button:hover {
-                        background-color: rgba(100, 116, 139, 0.3);
-                      }
-                      .custom-calendar .rdp-nav_button_previous {
-                        left: 0.5rem;
-                      }
-                      .custom-calendar .rdp-nav_button_next {
-                        right: 0.5rem;
-                      }
-                      .custom-calendar .rdp-table {
-                        width: 100%;
-                        max-width: none;
-                      }
-                      .custom-calendar .rdp-months {
-                        width: 100%;
-                      }
-                      .custom-calendar .rdp-month {
-                        width: 100%;
-                      }
-                    `}</style>
-                    <div className="custom-calendar">
-                      <DayPicker
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={(date) => {
-                          setSelectedDate(date || undefined);
-                          setShowCalendar(false);
-                        }}
-                        disabled={{ before: new Date() }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+                  disabled={{ before: new Date() }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
 
-          {/* Guests */}
-          <div className="relative flex-1 min-w-[150px]">
-            <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={20} />
+        {/* Guests + Search */}
+        <div className="flex items-start gap-2">
+          <div className="relative flex-grow">
+            <Users className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input
               type="number"
               placeholder="Guests"
@@ -252,35 +275,24 @@ const SearchForm = () => {
                   setErrors(prev => ({ ...prev, guests: undefined }));
                 }
               }}
-              className={`w-full bg-slate-900/50 border rounded-xl py-3.5 pl-12 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all ${
-                errors.guests ? 'border-red-500' : 'border-slate-600/50'
+              className={`w-full bg-slate-700/50 border rounded-lg py-3 pl-10 pr-4 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
+                errors.guests ? 'border-red-500' : 'border-slate-600'
               }`}
               aria-label="Number of guests"
             />
             {errors.guests && <p className="absolute -bottom-5 left-0 text-xs text-red-400">{errors.guests}</p>}
           </div>
 
-          {/* Search Button */}
           <button
             type="submit"
             disabled={loading}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-8 py-3.5 rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-semibold shadow-lg shadow-orange-500/30"
+            className="bg-gradient-to-r from-orange-500 to-amber-500 text-white p-3.5 rounded-lg hover:opacity-90 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
             aria-label="Search"
           >
-            {loading ? (
-              <>
-                <Loader2 size={20} className="animate-spin" />
-                <span>Searching...</span>
-              </>
-            ) : (
-              <>
-                <Search size={20} />
-                <span>Search</span>
-              </>
-            )}
+            {loading ? <Loader2 size={20} className="animate-spin" /> : <Search size={20} />}
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };
