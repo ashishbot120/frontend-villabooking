@@ -9,10 +9,10 @@ import {
 } from 'react-icons/fi';
 import { 
     MdVilla, MdLocationOn, MdKingBed, MdPeople, MdPool, 
-    MdFitnessCenter, MdSpa, MdTheaters, MdBathroom, MdOutlineAttachMoney
+    MdFitnessCenter, MdSpa, MdTheaters, MdBathroom
 } from "react-icons/md";
 import { BsTextareaResize } from "react-icons/bs";
-import { FaUmbrellaBeach } from "react-icons/fa";
+import { FaUmbrellaBeach, FaRupeeSign } from "react-icons/fa"; // Imported Rupee Icon
 import Navbar from '@/app/components/navbar';
 import { useAppSelector } from '@/app/store/Hooks';
 import api from '@/utils/axiosInstance';
@@ -226,7 +226,7 @@ const HostVillaPageContent = () => {
                 style={{ backgroundImage: "url('https://images.pexels.com/photos/221457/pexels-photo-221457.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')" }}
             >
                 {/* Dark Overlay to make text readable */}
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-0"></div>
+                <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] z-0"></div>
 
                 <motion.div 
                     /* CHANGED: Switched from bg-blue-900/40 to bg-slate-900/95 for consistent dark background */
@@ -273,7 +273,8 @@ const HostVillaPageContent = () => {
                                     
                                     <div className="relative group">
                                         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-orange-400">
-                                            <MdOutlineAttachMoney size={24} />
+                                            {/* REPLACED DOLLAR WITH RUPEE ICON */}
+                                            <FaRupeeSign size={20} />
                                         </div>
                                         <input 
                                             type="number"
